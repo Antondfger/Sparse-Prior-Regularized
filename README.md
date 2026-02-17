@@ -13,7 +13,6 @@ Specify environment variables:
 export PATH4SEQ="/your/path"
 # path to the raw data
 export RECSYS_DATA_PATH="/your/path"
-``
 ```
 Example of run via command line:
 ```sh
