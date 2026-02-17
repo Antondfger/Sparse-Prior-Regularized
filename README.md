@@ -27,7 +27,7 @@ python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 cuda_visible
 python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 cuda_visible_devices=2 model_params.num_blocks=3 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=ce temp=1 seqrec_module.type_adj=logit adj=0.4
 
 # Margin Adjustment on Tmall dataset
-python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 cuda_visible_devices=2 model_params.num_blocks=3 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=ce temp=1 seqrec_module.type_adj=logit adj=0.01
+python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 cuda_visible_devices=2 model_params.num_blocks=3 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=ce temp=1 seqrec_module.type_adj=margin adj=0.01
 
 # Cross-Entropy on Tmall dataset
 python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 cuda_visible_devices=2 model_params.num_blocks=3 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=ce temp=1
