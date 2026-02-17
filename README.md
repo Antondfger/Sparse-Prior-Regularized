@@ -15,8 +15,9 @@ export PATH4SEQ="/your/path"
 export RECSYS_DATA_PATH="/your/path"
 ``
 ```
-
+Example of run via command line:
 ```sh
+cd runs
 # PR-Entmax on Tmall dataset
 python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 model_params.num_blocks=2 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=entmax temp=1.71 adj=0.05 seqrec_module.type_adj=logit
 
