@@ -1,0 +1,8 @@
+name: zvuk_new
+data_path: 
+path_to_prep_data: 
+path_to_split_data: /home/jovyan/Pembek/pop-bias/seqrec-datasets/notebooks/
+column_name:  
+  user_id: 'user_id'
+  item_id: 'item_id'
+  timestamp: 'timestamp'
