@@ -31,4 +31,11 @@ python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 model_params
 
 # Cross-Entropy on Tmall dataset
 python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 model_params.num_blocks=3 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=ce temp=1
+
+#Parameter tuning for Tmall with ce loss
+python optuna_rec.py datasets_info=Tmall type_loss=ce --multirun
+
+#Parameter tuning for Tmall with entmax loss
+python optuna_rec.py datasets_info=Tmall type_loss=entmax --multirun
+
 ```
