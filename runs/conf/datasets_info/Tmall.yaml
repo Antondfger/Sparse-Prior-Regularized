@@ -1,7 +1,7 @@
 name: tmall
 data_path:
 path_to_prep_data: 
-path_to_split_data: /home/jovyan/Pembek/pop-bias/seqrec-datasets/notebooks/
+path_to_split_data: ${oc.env:RECSYS_DATA_PATH}/30M.csv
 column_name:  
   user_id: 'user_id'
   item_id: 'item_id'
