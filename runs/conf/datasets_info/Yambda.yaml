@@ -1,7 +1,7 @@
 name: yambda
 data_path: 
 path_to_prep_data: 
-path_to_split_data: ${oc.env:RECSYS_DATA_PATH}/30M.csv
+path_to_split_data: ${oc.env:RECSYS_DATA_PATH}
 column_name:  
   user_id: 'user_id'
   item_id: 'item_id'
