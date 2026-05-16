@@ -121,6 +121,7 @@ class SeqRec(SeqRecBase):
         type_adj=None,
         item_counts=None,
         decay_epochs=5,
+        margin_type="log",
     ):
 
         super().__init__(model, lr, padding_idx, predict_top_k, filter_seen)
@@ -130,6 +131,12 @@ class SeqRec(SeqRecBase):
         self.n_classes = len(item_counts)
         self.decay_epochs = decay_epochs
         self.temp = temp
+        self.margin_type = margin_type
+
+        if hasattr(self.model, "item_emb"):  # for SASRec
+            self.embed_layer = self.model.item_emb
+        elif hasattr(self.model, "embed_layer"):  # for other models
+            self.embed_layer = self.model.embed_layer
 
         if self.tau_adj is not None:
             if self.type_adj == "logit":
@@ -143,6 +150,28 @@ class SeqRec(SeqRecBase):
             elif self.type_adj == "rps":
                 print("rps")
                 item_counts = (1 / (item_counts + 10e-7) ** self.tau_adj) * 0.005
+
+            elif self.type_adj in ["bc_cos", "bc_angle", "bc_dot"]:
+                print(self.type_adj)
+                if self.margin_type == "rank":
+                    print("margin_type: rank")
+                    # Ранги: 0 для самого популярного, N-1 для наименее популярного
+                    item_ranks = item_counts.argsort(descending=True).argsort()
+                    # Инвертируем, чтобы у самого популярного был 1.0, а у редкого 0.0
+                    normalized_pop = 1.0 - (item_ranks.float() / (self.n_classes - 1))
+                    item_counts = normalized_pop * self.tau_adj
+                else:
+                    print("margin_type: log")
+                    log_counts = torch.log(item_counts)
+                    # Нормализуем логарифм популярности так, чтобы максимум был равен 1.
+                    # Это делает параметр tau_adj предсказуемым (максимальный бонус)
+                    # и независимым от размера датасета.
+                    max_log_count = torch.max(log_counts)
+                    item_counts = (log_counts / max_log_count) * self.tau_adj
+                
+                if self.type_adj == "bc_angle":
+                    # Ограничиваем марджин, чтобы он строго был меньше pi
+                    item_counts = torch.clamp(item_counts, max=torch.pi - 0.01)
 
             self.register_buffer("counts", item_counts)
             print(self.counts)
@@ -165,11 +194,42 @@ class SeqRec(SeqRecBase):
 
     def compute_loss(self, outputs, batch):
 
-        logits = outputs.view(-1, outputs.size(-1))
         labels = batch["labels"].view(-1)
 
-        if self.tau_adj is not None and self.type_adj != "rps":
-            logits = logits + self.counts
+        if self.type_adj in ["bc_cos", "bc_angle"]:
+            outputs_norm = torch.nn.functional.normalize(outputs, p=2, dim=-1)
+            weights_norm = torch.nn.functional.normalize(self.embed_layer.weight, p=2, dim=-1)
+            logits = torch.matmul(outputs_norm, weights_norm.T)
+            logits = logits.view(-1, logits.size(-1))
+            
+            valid_mask = (labels != self.padding_idx) & (labels != -100)
+            valid_labels = labels[valid_mask]
+            
+            if self.type_adj == "bc_cos":
+                margin = self.counts[valid_labels]
+                # Ограничиваем логит снизу, чтобы он не ушел далеко за -1
+                logits[valid_mask, valid_labels] = torch.clamp(logits[valid_mask, valid_labels] + margin, min=-1.0)
+            elif self.type_adj == "bc_angle":
+                cos_theta = logits[valid_mask, valid_labels]
+                margin = self.counts[valid_labels]
+                # cos(theta + margin) = cos(theta)cos(margin) - sin(theta)sin(margin)
+                sin_theta = torch.sqrt(torch.clamp(1.0 - cos_theta**2, min=1e-7))
+                cos_theta_m = cos_theta * torch.cos(margin) - sin_theta * torch.sin(margin)
+                
+                # ArcFace trick: защита от осцилляции при theta + margin > pi
+                cond = cos_theta > -torch.cos(margin)
+                # Возвращаем стабильный fallback (как в оригинальном InsightFace)
+                fallback = cos_theta - margin * torch.sin(margin)
+                logits[valid_mask, valid_labels] = torch.where(cond, cos_theta_m, fallback)
+        elif self.type_adj == "bc_dot":
+            logits = outputs.view(-1, outputs.size(-1))
+            valid_mask = (labels != self.padding_idx) & (labels != -100)
+            valid_labels = labels[valid_mask]
+            logits[valid_mask, valid_labels] += self.counts[valid_labels]
+        else:
+            logits = outputs.view(-1, outputs.size(-1))
+            if self.tau_adj is not None and self.type_adj != "rps":
+                logits = logits + self.counts
 
         if self.type_loss == "ce":
             loss = self.loss(logits / self.temp, labels)
@@ -185,7 +245,15 @@ class SeqRec(SeqRecBase):
 
     def prediction_output(self, batch):
 
-        return self.model(batch["input_ids"], batch["attention_mask"])
+        outputs = self.model(batch["input_ids"], batch["attention_mask"])
+        if outputs.size(-1) != self.n_classes:
+            if self.type_adj in ["bc_cos", "bc_angle"]:
+                outputs_norm = torch.nn.functional.normalize(outputs, p=2, dim=-1)
+                weights_norm = torch.nn.functional.normalize(self.embed_layer.weight, p=2, dim=-1)
+                outputs = torch.matmul(outputs_norm, weights_norm.T) / self.temp
+            else:
+                outputs = torch.matmul(outputs, self.embed_layer.weight.T) / self.temp
+        return outputs
 
     def get_current_k(self):
         max_k = self.n_classes
@@ -212,6 +280,7 @@ class SeqRecWithSampling(SeqRec):
         tau_adj=None,
         type_adj=None,
         item_counts=None,
+        margin_type="log",
     ):
 
         super().__init__(
@@ -226,33 +295,38 @@ class SeqRecWithSampling(SeqRec):
             type_adj,
             item_counts,
             decay_epochs,
+            margin_type,
         )
-
-        self.loss = type_loss
-
-        if hasattr(self.model, "item_emb"):  # for SASRec
-            self.embed_layer = self.model.item_emb
-
-        elif hasattr(self.model, "embed_layer"):  # for other models
-            self.embed_layer = self.model.embed_layer
 
     def compute_loss(self, outputs, batch):
 
         if batch["negatives"].ndim == 2:  # for full_negative_sampling=False
             # [N, M, D]
             embeds_negatives = self.embed_layer(batch["negatives"].to(torch.int32))
-            # [N, T, D] * [N, D, M] -> [N, T, M]
-            logits_negatives = torch.matmul(outputs, embeds_negatives.transpose(1, 2))
+            if self.type_adj in ["bc_cos", "bc_angle"]:
+                outputs_norm = torch.nn.functional.normalize(outputs, p=2, dim=-1)
+                embeds_negatives_norm = torch.nn.functional.normalize(embeds_negatives, p=2, dim=-1)
+                logits_negatives = torch.matmul(outputs_norm, embeds_negatives_norm.transpose(1, 2))
+            else:
+                # [N, T, D] * [N, D, M] -> [N, T, M]
+                logits_negatives = torch.matmul(outputs, embeds_negatives.transpose(1, 2))
 
             neg_ids = batch["negatives"].unsqueeze(1)
 
         elif batch["negatives"].ndim == 3:  # for full_negative_sampling=True
             # [N, T, M, D]
             embeds_negatives = self.embed_layer(batch["negatives"].to(torch.int32))
-            # [N, T, 1, D] * [N, T, D, M] -> [N, T, 1, M] -> -> [N, T, M]
-            logits_negatives = torch.matmul(
-                outputs.unsqueeze(2), embeds_negatives.transpose(2, 3)
-            ).squeeze()
+            if self.type_adj in ["bc_cos", "bc_angle"]:
+                outputs_norm = torch.nn.functional.normalize(outputs, p=2, dim=-1)
+                embeds_negatives_norm = torch.nn.functional.normalize(embeds_negatives, p=2, dim=-1)
+                logits_negatives = torch.matmul(
+                    outputs_norm.unsqueeze(2), embeds_negatives_norm.transpose(2, 3)
+                ).squeeze()
+            else:
+                # [N, T, 1, D] * [N, T, D, M] -> [N, T, 1, M] -> -> [N, T, M]
+                logits_negatives = torch.matmul(
+                    outputs.unsqueeze(2), embeds_negatives.transpose(2, 3)
+                ).squeeze()
             neg_ids = batch["negatives"]
 
             if logits_negatives.ndim == 2:
@@ -264,22 +338,29 @@ class SeqRecWithSampling(SeqRec):
         labels[labels == -100] = self.padding_idx
         # [N, T, D]
         embeds_labels = self.embed_layer(labels)
-        # [N, T, 1, D] * [N, T, D, 1] -> [N, T, 1, 1] -> [N, T]
-        logits_labels = torch.matmul(
-            outputs.unsqueeze(2), embeds_labels.unsqueeze(3)
-        ).squeeze()
+        if self.type_adj in ["bc_cos", "bc_angle"]:
+            outputs_norm = torch.nn.functional.normalize(outputs, p=2, dim=-1)
+            embeds_labels_norm = torch.nn.functional.normalize(embeds_labels, p=2, dim=-1)
+            logits_labels = torch.matmul(
+                outputs_norm.unsqueeze(2), embeds_labels_norm.unsqueeze(3)
+            ).squeeze()
+        else:
+            # [N, T, 1, D] * [N, T, D, 1] -> [N, T, 1, 1] -> [N, T]
+            logits_labels = torch.matmul(
+                outputs.unsqueeze(2), embeds_labels.unsqueeze(3)
+            ).squeeze()
 
         # concat positives and negatives
         # [N, T, M + 1]
         logits = torch.cat([logits_labels.unsqueeze(2), logits_negatives], dim=-1)
 
         # prepare targets for loss
-        if self.loss == "ce" or self.loss == "entmax":
+        if self.type_loss == "ce" or self.type_loss == "entmax":
             # [N, T]
             targets = batch["labels"].clone()
             targets[targets != -100] = 0
 
-        elif self.loss == "bce":
+        elif self.type_loss == "bce":
             # [N, T, M + 1]
             targets = torch.zeros_like(logits)
             targets[:, :, 0] = 1
@@ -298,7 +379,29 @@ class SeqRecWithSampling(SeqRec):
 
             logits = logits + sampled_counts
 
-        if self.loss == "entmax":
+        if self.tau_adj is not None and self.type_adj == "bc_dot":
+            pos_ids = labels
+            pos_counts = self.counts[pos_ids.to(torch.long)]
+            logits[:, :, 0] = logits[:, :, 0] + pos_counts
+            
+        elif self.tau_adj is not None and self.type_adj == "bc_cos":
+            pos_ids = labels
+            pos_counts = self.counts[pos_ids.to(torch.long)]
+            logits[:, :, 0] = torch.clamp(logits[:, :, 0] + pos_counts, min=-1.0)
+
+        elif self.tau_adj is not None and self.type_adj == "bc_angle":
+            pos_ids = labels
+            margin = self.counts[pos_ids.to(torch.long)]
+            cos_theta = logits[:, :, 0]
+            sin_theta = torch.sqrt(torch.clamp(1.0 - cos_theta**2, min=1e-7))
+            cos_theta_m = cos_theta * torch.cos(margin) - sin_theta * torch.sin(margin)
+            
+            # ArcFace trick: защита от осцилляции при theta + margin > pi
+            cond = cos_theta > -torch.cos(margin)
+            fallback = cos_theta - margin * torch.sin(margin)
+            logits[:, :, 0] = torch.where(cond, cos_theta_m, fallback)
+
+        if self.type_loss == "entmax":
 
             logits = logits / self.temp
 
@@ -308,7 +411,7 @@ class SeqRecWithSampling(SeqRec):
 
             loss = entmax15_loss(valid_logits, valid_targets, k=self.get_current_k())
 
-        elif self.loss == "ce":
+        elif self.type_loss == "ce":
             loss_fct = nn.CrossEntropyLoss(reduction="none")
             loss = loss_fct(logits.view(-1, logits.size(-1)), targets.view(-1))
 
@@ -321,6 +424,11 @@ class SeqRecWithSampling(SeqRec):
     def prediction_output(self, batch):
 
         outputs = self.model(batch["input_ids"], batch["attention_mask"])
-        outputs = torch.matmul(outputs, self.embed_layer.weight.T)
+        if self.type_adj in ["bc_cos", "bc_angle"]:
+            outputs_norm = torch.nn.functional.normalize(outputs, p=2, dim=-1)
+            weights_norm = torch.nn.functional.normalize(self.embed_layer.weight, p=2, dim=-1)
+            outputs = torch.matmul(outputs_norm, weights_norm.T) / self.temp
+        else:
+            outputs = torch.matmul(outputs, self.embed_layer.weight.T) / self.temp
 
         return outputs
