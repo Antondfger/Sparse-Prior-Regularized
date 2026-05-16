@@ -72,11 +72,15 @@ def main(config):
     validation = prepare_dataset(validation)
     test = prepare_dataset(test)
 
-    train_loader, eval_loader = create_dataloaders(train, validation, config)
+    counts_tensor = prepare_item_counts(
+        train, int(max_item_id + 1), counts=config.counts
+    )
+
+    train_loader, eval_loader = create_dataloaders(train, validation, config, counts_tensor)
     model = create_model(config, item_count=int(max_item_id))
     start_time = time.time()
     trainer, seqrec_module, model = training(
-        model, train_loader, eval_loader, train, max_item_id, config
+        model, train_loader, eval_loader, train, max_item_id, config, counts_tensor
     )
     training_time = time.time() - start_time
     print("training_time", training_time)
@@ -108,9 +112,13 @@ def prepare_dataset(dataset):
     return dataset
 
 
-def create_dataloaders(train, validation, config):
+def create_dataloaders(train, validation, config, counts_tensor):
 
-    train_dataset = CausalLMDataset(train, **config["dataset_params"])
+    train_dataset = CausalLMDataset(
+        train,
+        item_counts_tensor=counts_tensor,
+        **config["dataset_params"]
+    )
     eval_dataset = CausalLMPredictionDataset(
         validation,
         max_length=config.dataset_params.max_length,
@@ -140,7 +148,7 @@ def create_model(config, item_count):
     if (
         hasattr(config.dataset_params, "num_negatives")
         and config.dataset_params.num_negatives
-    ):
+    ) or config.seqrec_module.type_adj in ["bc_cos", "bc_angle", "bc_dot"]:
         add_head = False
     else:
         add_head = True
@@ -150,10 +158,8 @@ def create_model(config, item_count):
     return model
 
 
-def training(model, train_loader, eval_loader, train, max_item_id, config):
-    counts_tensor = prepare_item_counts(
-        train, int(max_item_id + 1), counts=config.counts
-    )
+def training(model, train_loader, eval_loader, train, max_item_id, config, counts_tensor):
+
     print(counts_tensor)
 
     if config.dataset_params.num_negatives is not None:
