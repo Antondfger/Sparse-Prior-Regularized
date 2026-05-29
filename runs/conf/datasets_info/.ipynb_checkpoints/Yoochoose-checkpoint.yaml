@@ -1,6 +1,0 @@
-name: yoochoose
-path_to_split_data: ${oc.env:RECSYS_DATA_PATH}
-column_name:  
-  user_id: 'user_id'
-  item_id: 'item_id'
-  timestamp: 'timestamp'
