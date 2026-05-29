@@ -19,6 +19,9 @@ class LMDataset(Dataset):
         max_length=128,
         num_negatives=None,
         full_negative_sampling=False,
+        gamma=0.0,
+        filter_seen_sampling=True,
+        item_counts_tensor=None,
         user_col="user_id",
         item_col="item_id",
         time_col="timestamp",
@@ -27,16 +30,29 @@ class LMDataset(Dataset):
         self.max_length = max_length
         self.num_negatives = num_negatives
         self.full_negative_sampling = full_negative_sampling
+        self.gamma = gamma
         self.user_col = user_col
         self.item_col = item_col
         self.time_col = time_col
+        self.filter_seen_sampling = filter_seen_sampling
         self.data = (
             df.sort_values(time_col).groupby(user_col)[item_col].agg(list).to_dict()
         )
         self.user_ids = list(self.data.keys())
 
+        self.num_negatives = num_negatives
         if num_negatives:
             self.all_items = df[item_col].unique()
+
+            if float(self.gamma) > 0.0:
+                if item_counts_tensor is None:
+                    raise ValueError("item_counts_tensor must be provided when gamma > 0.0")
+
+                counts = item_counts_tensor[self.all_items].numpy()
+                probs = counts ** self.gamma
+                self.item_probs = probs / probs.sum()
+            else:
+                self.item_probs = None
 
     def __len__(self):
 
@@ -45,18 +61,34 @@ class LMDataset(Dataset):
     def sample_negatives(self, item_sequence):
         """Sample negative items for loss calculation."""
 
-        negatives = self.all_items[~np.isin(self.all_items, item_sequence)]
+        if self.filter_seen_sampling:
+            mask = ~np.isin(self.all_items, item_sequence)
+            negatives = self.all_items[mask]
+            if self.item_probs is not None:
+                p = self.item_probs[mask]
+            else:
+                p = None
+        else:
+            negatives = self.all_items
+            p = self.item_probs
+        
+        if self.item_probs is not None:
+            p = p / p.sum()
+        else:
+            p = None
+
         if self.full_negative_sampling:
             negatives = np.random.choice(
                 negatives,
                 size=self.num_negatives * (len(item_sequence) - 1),
                 replace=True,
+                p=p,
             )
             negatives = negatives.reshape(len(item_sequence) - 1, self.num_negatives)
         else:
             # replace=True for speed, with replace=False sampling can be very slow
             negatives = np.random.choice(
-                negatives, size=self.num_negatives, replace=True
+                negatives, size=self.num_negatives, replace=True, p=p
             )
 
         return negatives
@@ -72,6 +104,9 @@ class CausalLMDataset(LMDataset):
         shift_labels=True,
         num_negatives=None,
         full_negative_sampling=False,
+        gamma=0.0,
+        filter_seen_sampling=True,
+        item_counts_tensor=None,
         user_col="user_id",
         item_col="item_id",
         time_col="timestamp",
@@ -79,12 +114,15 @@ class CausalLMDataset(LMDataset):
 
         super().__init__(
             df,
-            max_length,
-            num_negatives,
-            full_negative_sampling,
-            user_col,
-            item_col,
-            time_col,
+            max_length=max_length,
+            num_negatives=num_negatives,
+            full_negative_sampling=full_negative_sampling,
+            gamma=gamma,
+            filter_seen_sampling=filter_seen_sampling,
+            item_counts_tensor=item_counts_tensor,
+            user_col=user_col,
+            item_col=item_col,
+            time_col=time_col,
         )
 
         self.shift_labels = shift_labels

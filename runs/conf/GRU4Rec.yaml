@@ -1,13 +1,13 @@
-cuda_visible_devices: 2
+cuda_visible_devices: 0
 random_state: 17
 defaults:
   - _self_
-  - datasets_info: Zvuk
+  - datasets_info: Tmall
 
 dataset_params:
   max_length: 128
   num_negatives: 
-  gamma: 0 #for pop sampling
+  gamma: 0
   filter_seen_sampling: True
 
 dataloader:
@@ -15,26 +15,24 @@ dataloader:
   test_batch_size: 64
   num_workers: 8
   
-model: SASRec
+model: GRU4Rec
 model_params:
-  maxlen: ${dataset_params.max_length}
-  hidden_units: 224
-  num_blocks: 1
-  num_heads: 4
-  dropout_rate: 0.4
+  input_size: 128
+  hidden_size: ${model_params.input_size}
+  num_layers: 2
+  dropout: 0.3
   
 seqrec_module:
-  type_correction: 
+  type_adj: 
   lr: 0.001
   predict_top_k: 10  # this value is used for validation
   filter_seen: False
-  alpha: 1.5
 
-gamma: 
+adj: 
 
 counts: False
 
-type_loss: ce # possible ce/sparsemax/entmax
+type_loss: entmax # possible ce/sparsemax/entmax
 temp: 1
 
 trainer_params:
@@ -42,5 +40,5 @@ trainer_params:
 patience: 10
 top_k_metrics: [10, 100]
 
-# project_name: entmax
-# task_name: 'experiments'
+project_name: entmax
+task_name: 'experiments'
