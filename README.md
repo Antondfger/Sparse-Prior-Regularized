@@ -60,10 +60,3 @@ python optuna_rec.py datasets_info=Tmall type_loss=ce --multirun
 python optuna_rec.py datasets_info=Tmall type_loss=entmax --multirun
 
 ```
-
-Run all experiments
-
-```sh
-cd runs
-sh run.sh
-```
