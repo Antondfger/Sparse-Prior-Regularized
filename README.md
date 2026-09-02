@@ -12,47 +12,62 @@ Alexander Savchenko ·
 
 ## Method
 
-<p align="center">
-  <img src="images/pr_entmax_pipeline.png" width="900">
-</p>
-
-
-### Training
-
-PR-entmax combines contextual relevance with the item popularity prior:
+PR-entmax introduces a **popularity-aware sparse training objective**.  
+For each item \(i\), the backbone produces a contextual relevance score, which is combined with a fixed popularity prior:
 
 ```math
 s_i^{\mathrm{train}}(x) = z_i(x) + \gamma \log q_i
 ```
 
-and applies a sparse entmax mapping:
+where:
+
+- `z_i(x)` — contextual logit produced by the sequential recommendation model;
+- `q_i` — item popularity prior estimated from the training data;
+- `γ` — strength of the popularity prior;
+- `θ` — temperature parameter;
+- `α` — entmax sparsity parameter;
+- `τ` — threshold defining the active support.
+
+The adjusted scores are transformed using a sparse entmax mapping:
 
 ```math
 p^*(z)
 =
-\operatorname{entmax}_{\alpha}
+\mathrm{entmax}_{\alpha}
 \left(
 \frac{z + \gamma \log q}{\theta}
 \right)
 ```
 
-The prior therefore affects the **active support** — the set of items receiving non-zero probability and gradients:
+Unlike softmax, entmax assigns exactly zero probability to part of the catalog.  
+The resulting active support is therefore popularity-aware:
 
 ```math
-\operatorname{supp}(p^*)
+\mathrm{supp}(p^*)
 =
-\{i : z_i + \gamma \log q_i > \theta \tau\}
+\left\{
+i : z_i + \gamma \log q_i > \theta \tau
+\right\}
 ```
 
-### Inference
+Only items inside this support receive non-zero probabilities and gradients during training. Thus, the popularity prior affects not only the probability values, but also **which items participate in optimization**.
 
-The popularity prior is removed at inference time:
+<p align="center">
+  <img src="images/p_entmax_figure_2_2.png" width="900">
+</p>
+
+<p align="center">
+  <em>
+    Illustration of the PR-entmax training pipeline. Contextual logits produced by the backbone are combined with a fixed item popularity prior. The adjusted scores are passed through entmax, producing a sparse, popularity-aware distribution whose active support determines which items receive non-zero gradients.
+  </em>
+</p>
+
+At inference time, the popularity prior is removed and items are ranked using only the learned contextual relevance:
 
 ```math
 s_i^{\mathrm{inference}}(x) = z_i(x)
 ```
----
-
+___
 
 ## Results
 Below we present the trade-off between NDCG@10 and Novelty@10 across different loss functions and hyperparameter configurations for all datasets.
