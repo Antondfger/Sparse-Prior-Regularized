@@ -1,9 +1,18 @@
 <div align="center">
-  
+
 # Mitigating Popularity Bias in Sequential Recommendations with Sparse Prior-Regularized Objective
 
-**Authors:**
-[Anton Pembek](https://scholar.google.com/citations?user=1oCtv4QAAAAJ) · [Anton Klenitskiy](https://scholar.google.com/citations?user=eGTslO8AAAAJ) · Alexander Savchenko · [Alexey Vasilev](https://scholar.google.com/citations?user=4vb0JIwAAAAJ)
+### PR-entmax: Context-Dependent Popularity Debiasing via Sparse Prior-Regularized Training
+
+[Anton Pembek](https://scholar.google.com/citations?user=1oCtv4QAAAAJ) ·
+[Anton Klenitskiy](https://scholar.google.com/citations?user=eGTslO8AAAAJ) ·
+Alexander Savchenko ·
+[Alexey Vasilev](https://scholar.google.com/citations?user=4vb0JIwAAAAJ)
+
+**CIKM 2026**
+
+[Paper](https://doi.org/10.1145/3799682.3841006) ·
+[Code](https://github.com/Antondfger/Sparse-Prior-Regularized)
 
 </div>
 
