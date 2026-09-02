@@ -16,49 +16,41 @@ Alexander Savchenko ·
   <img src="images/pr_entmax_pipeline.png" width="900">
 </p>
 
-<p align="center">
-  <em>
-    PR-entmax combines contextual logits with the item popularity prior before applying a sparse entmax mapping.
-    The resulting active support determines which items receive non-zero gradients during training.
-  </em>
-</p>
 
-The key idea is to modify the training scores using the item popularity prior:
+### Training
 
-$$
-s_i^{\mathrm{train}}(x)
-=
-z_i(x) + \gamma \log q_i
-$$
+PR-entmax combines contextual relevance with the item popularity prior:
 
-and construct a sparse probability distribution using entmax:
+```math
+s_i^{\mathrm{train}}(x) = z_i(x) + \gamma \log q_i
+```
 
-$$
+and applies a sparse entmax mapping:
+
+```math
 p^*(z)
 =
 \operatorname{entmax}_{\alpha}
 \left(
 \frac{z + \gamma \log q}{\theta}
-\right).
-$$
+\right)
+```
 
-Because entmax produces exact zeros, the popularity prior affects not only item probabilities but also the **active support**:
+The prior therefore affects the **active support** — the set of items receiving non-zero probability and gradients:
 
-$$
+```math
 \operatorname{supp}(p^*)
 =
-\left\{
-i:
-z_i + \gamma \log q_i > \theta \tau
-\right\}.
-$$
+\{i : z_i + \gamma \log q_i > \theta \tau\}
+```
 
-At inference time, the prior is removed:
+### Inference
 
-$$
-s_i^{\mathrm{inference}}(x) = z_i(x).
-$$
+The popularity prior is removed at inference time:
 
+```math
+s_i^{\mathrm{inference}}(x) = z_i(x)
+```
 ---
 
 
