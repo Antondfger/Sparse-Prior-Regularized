@@ -60,40 +60,41 @@ s_i^{\mathrm{inference}}(x) = z_i(x)
 ```
 ## Results
 
-Experimental results on **SASRec** for all considered approaches. **Bold** numbers mark the best model, <u>underlined</u> numbers mark the second best. Asterisk (<sup>*</sup>) denotes a statistically significant improvement over *Cross-Entropy* for the best model.
+Experimental results on **SASRec** for all considered approaches at **Top-10**.  
+**Bold** numbers mark the best model, <u>underlined</u> numbers mark the second best. Asterisk (<sup>*</sup>) denotes a statistically significant improvement over *Cross-Entropy* for the best model.
 
-| Dataset | Method | NDCG@10 | NDCG@100 | Novelty@10 | Novelty@100 | Coverage@10 | Coverage@100 |
-|---|---|---:|---:|---:|---:|---:|---:|
-| **ML1M** | *Cross-Entropy* | 0.047 | <u>0.102</u> | 0.274 | 0.308 | 0.463 | 0.835 |
-|  | *IPW* | 0.047 | 0.100 | 0.290 | 0.321 | 0.496 | 0.871 |
-|  | *PD* | 0.040 | 0.095 | <u>0.306</u> | <u>0.327</u> | <u>0.514</u> | 0.851 |
-|  | *Pop Sampling* | <u>0.049</u> | <u>0.102</u> | 0.286 | 0.319 | 0.489 | <u>0.872</u> |
-|  | *Logit Adjustment* | 0.047 | 0.100 | 0.291 | 0.321 | 0.496 | 0.869 |
-|  | *PR-entmax* | **0.058**<sup>*</sup> | **0.103** | **0.331**<sup>*</sup> | **0.411**<sup>*</sup> | **0.600**<sup>*</sup> | **0.993**<sup>*</sup> |
-| **Tmall** | *Cross-Entropy* | <u>0.274</u> | <u>0.305</u> | 0.657 | 0.664 | 0.351 | 0.649 |
-|  | *IPW* | 0.265 | 0.296 | 0.704 | 0.704 | 0.431 | 0.722 |
-|  | *PD* | 0.249 | 0.279 | 0.705 | 0.713 | 0.332 | 0.566 |
-|  | *Pop Sampling* | 0.272 | 0.301 | **0.729**<sup>*</sup> | **0.755**<sup>*</sup> | <u>0.432</u> | <u>0.758</u> |
-|  | *Logit Adjustment* | 0.271 | 0.301 | <u>0.711</u> | <u>0.733</u> | 0.416 | 0.741 |
-|  | *PR-entmax* | **0.285**<sup>*</sup> | **0.312**<sup>*</sup> | 0.703 | 0.730 | **0.499**<sup>*</sup> | **0.878**<sup>*</sup> |
-| **Yambda-50M** | *Cross-Entropy* | 0.089 | <u>0.118</u> | 0.553 | 0.562 | 0.440 | 0.781 |
-|  | *IPW* | 0.085 | 0.106 | **0.687**<sup>*</sup> | <u>0.682</u> | <u>0.696</u> | 0.959 |
-|  | *PD* | 0.084 | 0.110 | 0.617 | 0.620 | 0.472 | 0.731 |
-|  | *Pop Sampling* | <u>0.092</u> | 0.116 | 0.647 | 0.658 | 0.668 | <u>0.960</u> |
-|  | *Logit Adjustment* | 0.089 | 0.113 | 0.626 | 0.637 | 0.550 | 0.878 |
-|  | *PR-entmax* | **0.098**<sup>*</sup> | **0.120**<sup>*</sup> | <u>0.671</u> | **0.688**<sup>*</sup> | **0.785**<sup>*</sup> | **0.997**<sup>*</sup> |
-| **Yoochoose** | *Cross-Entropy* | <u>0.203</u> | **0.230** | 0.606 | 0.609 | 0.753 | 0.987 |
-|  | *IPW* | 0.191 | 0.219 | <u>0.655</u> | 0.680 | 0.832 | **0.999** |
-|  | *PD* | 0.188 | 0.216 | 0.645 | 0.655 | 0.768 | 0.977 |
-|  | *Pop Sampling* | 0.200 | 0.226 | **0.663**<sup>*</sup> | <u>0.695</u> | <u>0.866</u> | <u>0.998</u> |
-|  | *Logit Adjustment* | 0.194 | 0.221 | 0.653 | 0.683 | 0.839 | <u>0.998</u> |
-|  | *PR-entmax* | **0.209**<sup>*</sup> | <u>0.228</u> | 0.646 | **0.755**<sup>*</sup> | **0.876**<sup>*</sup> | **0.999**<sup>*</sup> |
-| **Zvuk** | *Cross-Entropy* | <u>0.218</u> | **0.256** | 0.550 | 0.539 | 0.163 | 0.462 |
-|  | *IPW* | 0.199 | 0.228 | <u>0.655</u> | 0.661 | 0.182 | 0.436 |
-|  | *PD* | 0.199 | 0.237 | 0.618 | 0.616 | 0.176 | 0.425 |
-|  | *Pop Sampling* | 0.212 | 0.242 | 0.610 | <u>0.668</u> | 0.150 | 0.397 |
-|  | *Logit Adjustment* | 0.214 | <u>0.250</u> | 0.637 | 0.657 | <u>0.205</u> | <u>0.559</u> |
-|  | *PR-entmax* | **0.222**<sup>*</sup> | 0.246 | **0.686**<sup>*</sup> | **0.806**<sup>*</sup> | **0.216**<sup>*</sup> | **0.579**<sup>*</sup> |
+| Dataset | Method | NDCG@10 | Novelty@10 | Coverage@10 |
+|---|---|---:|---:|---:|
+| **ML1M** | *Cross-Entropy* | 0.047 | 0.274 | 0.463 |
+|  | *IPW* | 0.047 | 0.290 | 0.496 |
+|  | *PD* | 0.040 | <u>0.306</u> | <u>0.514</u> |
+|  | *Pop Sampling* | <u>0.049</u> | 0.286 | 0.489 |
+|  | *Logit Adjustment* | 0.047 | 0.291 | 0.496 |
+|  | *PR-entmax* | **0.058**<sup>*</sup> | **0.331**<sup>*</sup> | **0.600**<sup>*</sup> |
+| **Tmall** | *Cross-Entropy* | <u>0.274</u> | 0.657 | 0.351 |
+|  | *IPW* | 0.265 | 0.704 | 0.431 |
+|  | *PD* | 0.249 | 0.705 | 0.332 |
+|  | *Pop Sampling* | 0.272 | **0.729**<sup>*</sup> | <u>0.432</u> |
+|  | *Logit Adjustment* | 0.271 | <u>0.711</u> | 0.416 |
+|  | *PR-entmax* | **0.285**<sup>*</sup> | 0.703 | **0.499**<sup>*</sup> |
+| **Yambda-50M** | *Cross-Entropy* | 0.089 | 0.553 | 0.440 |
+|  | *IPW* | 0.085 | **0.687**<sup>*</sup> | <u>0.696</u> |
+|  | *PD* | 0.084 | 0.617 | 0.472 |
+|  | *Pop Sampling* | <u>0.092</u> | 0.647 | 0.668 |
+|  | *Logit Adjustment* | 0.089 | 0.626 | 0.550 |
+|  | *PR-entmax* | **0.098**<sup>*</sup> | <u>0.671</u> | **0.785**<sup>*</sup> |
+| **Yoochoose** | *Cross-Entropy* | <u>0.203</u> | 0.606 | 0.753 |
+|  | *IPW* | 0.191 | <u>0.655</u> | 0.832 |
+|  | *PD* | 0.188 | 0.645 | 0.768 |
+|  | *Pop Sampling* | 0.200 | **0.663**<sup>*</sup> | <u>0.866</u> |
+|  | *Logit Adjustment* | 0.194 | 0.653 | 0.839 |
+|  | *PR-entmax* | **0.209**<sup>*</sup> | 0.646 | **0.876**<sup>*</sup> |
+| **Zvuk** | *Cross-Entropy* | <u>0.218</u> | 0.550 | 0.163 |
+|  | *IPW* | 0.199 | <u>0.655</u> | 0.182 |
+|  | *PD* | 0.199 | 0.618 | 0.176 |
+|  | *Pop Sampling* | 0.212 | 0.610 | 0.150 |
+|  | *Logit Adjustment* | 0.214 | 0.637 | <u>0.205</u> |
+|  | *PR-entmax* | **0.222**<sup>*</sup> | **0.686**<sup>*</sup> | **0.216**<sup>*</sup> |
 
 
 
