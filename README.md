@@ -95,6 +95,8 @@ Experimental results on **SASRec** for all considered approaches. **Bold** numbe
 |  | *Logit Adjustment* | 0.214 | <u>0.250</u> | 0.637 | 0.657 | <u>0.205</u> | <u>0.559</u> |
 |  | *PR-entmax* | **0.222**<sup>*</sup> | 0.246 | **0.686**<sup>*</sup> | **0.806**<sup>*</sup> | **0.216**<sup>*</sup> | **0.579**<sup>*</sup> |
 
+
+
 Below we present the trade-off between NDCG@10 and Novelty@10 across different loss functions and hyperparameter configurations for all datasets.
 
 **Figure 1:** Trade-off between NDCG@10 and Novelty@10 for **Tmall** dataset.  
