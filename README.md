@@ -1,4 +1,5 @@
 <div align="center">
+  
 # Mitigating Popularity Bias in Sequential Recommendations with Sparse Prior-Regularized Objective
 
 **Authors:**
