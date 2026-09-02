@@ -1,50 +1,63 @@
-# PR-Entmax on Tmall dataset
+# PR-Entmax on Tmall dataset (SASRec)
 python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 model_params.num_blocks=2 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=entmax temp=1.71 adj=0.05 seqrec_module.type_adj=logit random_state=17,42,52 --multirun
 
-# Entmax on Tmall dataset
+# Entmax on Tmall dataset (SASRec)
 python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 model_params.num_blocks=2 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=entmax temp=1.71 random_state=17,42,52 --multirun
 
-# Logit Adjustment on Tmall dataset
+# Logit Adjustment on Tmall dataset (SASRec)
 python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 model_params.num_blocks=3 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=ce temp=1 seqrec_module.type_adj=logit adj=0.4 random_state=17,42,52 --multirun
 
-# Cross-Entropy on Tmall dataset
+# Cross-Entropy on Tmall dataset (SASRec)
 python dl.py datasets_info=Tmall dataset_params.num_negatives=50000 model_params.num_blocks=3 model_params.num_heads=4 model_params.dropout_rate=0.1 model_params.hidden_units=256 type_loss=ce temp=1 random_state=17,42,52 --multirun
 
 
-# PR-Entmax on Zvuk dataset
+# PR-Entmax on Zvuk dataset (SASRec)
 python dl.py datasets_info=Zvuk model_params.num_blocks=1 model_params.num_heads=4 model_params.dropout_rate=0.4 model_params.hidden_units=224 type_loss=entmax temp=26 adj=1 seqrec_module.type_adj=logit random_state=17,42,52 --multirun
 
-# Entmax on Zvuk dataset
+# Entmax on Zvuk dataset (SASRec)
 python dl.py datasets_info=Zvuk model_params.num_blocks=1 model_params.num_heads=4 model_params.dropout_rate=0.4 model_params.hidden_units=224 type_loss=entmax temp=26 random_state=17,42,52 --multirun
 
-# Logit Adjustment on Zvuk dataset
+# Logit Adjustment on Zvuk dataset (SASRec)
 python dl.py datasets_info=Zvuk model_params.num_blocks=1 model_params.num_heads=2 model_params.dropout_rate=0.5 model_params.hidden_units=192 type_loss=ce temp=1 seqrec_module.type_adj=logit adj=0.8 random_state=17,42,52 --multirun
 
-# Cross-Entropy on Zvuk dataset
+# Cross-Entropy on Zvuk dataset (SASRec)
 python dl.py datasets_info=Zvuk model_params.num_blocks=1 model_params.num_heads=2 model_params.dropout_rate=0.5 model_params.hidden_units=192 type_loss=ce temp=1 random_state=17,42,52 --multirun
 
 
-# PR-Entmax on Yambda dataset
+# PR-Entmax on Yambda dataset (SASRec)
 python dl.py datasets_info=Yambda model_params.num_blocks=1 model_params.num_heads=1 model_params.dropout_rate=0.2 model_params.hidden_units=256 type_loss=entmax temp=42 adj=0.9 seqrec_module.type_adj=logit random_state=17,42,52 --multirun
 
-# Entmax on Yambda dataset
+# Entmax on Yambda dataset (SASRec)
 python dl.py datasets_info=Yambda model_params.num_blocks=1 model_params.num_heads=1 model_params.dropout_rate=0.2 model_params.hidden_units=256 type_loss=entmax temp=42 random_state=17,42,52 --multirun
 
-# Logit Adjustment on Yambda dataset
+# Logit Adjustment on Yambda dataset (SASRec)
 python dl.py datasets_info=Yambda model_params.num_blocks=2 model_params.num_heads=2 model_params.dropout_rate=0.2 model_params.hidden_units=256 type_loss=ce temp=1 seqrec_module.type_adj=logit adj=0.6 random_state=17,42,52 --multirun
 
-# Cross-Entropy on Yambda dataset
+# Cross-Entropy on Yambda dataset (SASRec)
 python dl.py datasets_info=Yambda model_params.num_blocks=2 model_params.num_heads=2 model_params.dropout_rate=0.2 model_params.hidden_units=256 type_loss=ce temp=1 random_state=17,42,52 --multirun
 
 
-# PR-Entmax on Yoochoose dataset
+# PR-Entmax on Yoochoose dataset (SASRec)
 python dl.py datasets_info=Yoochoose model_params.num_blocks=3 model_params.num_heads=1 model_params.dropout_rate=0.3 model_params.hidden_units=224 type_loss=entmax temp=8.2 adj=0.5 seqrec_module.type_adj=logit random_state=17,42,52 --multirun
 
-# Entmax on Yoochoose dataset
+# Entmax on Yoochoose dataset (SASRec)
 python dl.py datasets_info=Yoochoose model_params.num_blocks=3 model_params.num_heads=1 model_params.dropout_rate=0.3 model_params.hidden_units=224 type_loss=entmax temp=8.2 random_state=17,42,52 --multirun
 
-# Logit Adjustment on Yoochoose dataset
+# Logit Adjustment on Yoochoose dataset (SASRec)
 python dl.py datasets_info=Yoochoose model_params.num_blocks=2 model_params.num_heads=1 model_params.dropout_rate=0.3 model_params.hidden_units=128 type_loss=ce temp=1 seqrec_module.type_adj=logit adj=0.9 random_state=17,42,52 --multirun
 
-# Cross-Entropy on Yoochoose dataset
+# Cross-Entropy on Yoochoose dataset (SASRec)
 python dl.py datasets_info=Yoochoose model_params.num_blocks=2 model_params.num_heads=1 model_params.dropout_rate=0.3 model_params.hidden_units=128 type_loss=ce temp=1 random_state=17,42,52 --multirun
+
+
+# Entmax on ML1M dataset (SASRec)
+python dl.py datasets_info=ML1M type_loss=entmax temp=8 model_params.num_blocks=3 model_params.num_heads=4 model_params.dropout_rate=0.5 model_params.hidden_units=224 random_state=17,42,52 --multirun
+
+# PR-Entmax on ML1M dataset (SASRec)
+python dl.py datasets_info=ML1M type_loss=entmax temp=8 model_params.num_blocks=3 model_params.num_heads=4 model_params.dropout_rate=0.5 model_params.hidden_units=224 adj=0.2 seqrec_module.type_adj=logit random_state=17,42,52 --multirun
+
+# Logit Adjustment on ML1M dataset (SASRec)
+python dl.py datasets_info=ML1M type_loss=ce temp=1 model_params.num_blocks=2 model_params.num_heads=4 model_params.dropout_rate=0.4 model_params.hidden_units=160 adj=0.1 seqrec_module.type_adj=logit random_state=17,42,52 --multirun
+
+# Cross-Entropy on ML1M dataset (SASRec)
+python dl.py datasets_info=ML1M type_loss=ce temp=1 model_params.num_blocks=2 model_params.num_heads=4 model_params.dropout_rate=0.4 model_params.hidden_units=160 random_state=17,42,52 --multirun
