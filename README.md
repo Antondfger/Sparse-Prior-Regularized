@@ -10,10 +10,23 @@ Alexander Savchenko ·
 
 > Popularity bias is a well-known challenge in recommender systems, often leading to the over-exposure of popular items and reduced catalog coverage. In this work, we propose PR-entmax, a sparse prior-regularized objective that makes popularity correction context-dependent. We derive our method from a generalized variational principle in which an item popularity prior is incorporated directly into a sparse probability mapping, yielding a popularity-aware active support: the set of items receiving non-zero probabilities and hence non-zero gradients is determined jointly by contextual relevance and item popularity. As a result, the prior affects not only item probabilities, but also which items participate in gradient updates during training. The method requires no architectural changes and can be integrated into existing training pipelines by modifying only the loss function. At inference time, the prior term is removed, and items are ranked by the learned contextual relevance alone. Experiments across multiple benchmark datasets and sequential recommendation architectures show that PR-entmax consistently reduces popularity bias while preserving or improving recommendation relevance, advancing the relevance-debiasing trade-off.
 
+<p align="center">
+  <img src="images/p_entmax_figure_2_2.png" width="900">
+</p>
+
+<p align="center">
+  <em>
+    Illustration of the PR-entmax training pipeline. Contextual logits produced by the backbone are combined with a fixed item popularity prior. The adjusted scores are transformed by entmax into a sparse, popularity-aware distribution, determining which items receive non-zero gradients during training.
+  </em>
+</p>
+
+---
+
 ## Method
 
-PR-entmax introduces a **popularity-aware sparse training objective**.  
-For each item \(i\), the backbone produces a contextual relevance score, which is combined with a fixed popularity prior:
+PR-entmax introduces a **popularity-aware sparse training objective**.
+
+For each item, the backbone produces a contextual relevance score, which is combined with a fixed popularity prior:
 
 ```math
 s_i^{\mathrm{train}}(x) = z_i(x) + \gamma \log q_i
@@ -21,14 +34,13 @@ s_i^{\mathrm{train}}(x) = z_i(x) + \gamma \log q_i
 
 where:
 
-- `z_i(x)` — contextual logit produced by the sequential recommendation model;
+- `z_i(x)` — contextual logit produced by the recommendation model;
 - `q_i` — item popularity prior estimated from the training data;
-- `γ` — strength of the popularity prior;
+- `γ` — strength of the popularity correction;
 - `θ` — temperature parameter;
-- `α` — entmax sparsity parameter;
-- `τ` — threshold defining the active support.
+- `α` — entmax sparsity parameter.
 
-The adjusted scores are transformed using a sparse entmax mapping:
+The adjusted scores are transformed using entmax:
 
 ```math
 p^*(z)
@@ -39,36 +51,13 @@ p^*(z)
 \right)
 ```
 
-Unlike softmax, entmax assigns exactly zero probability to part of the catalog.  
-The resulting active support is therefore popularity-aware:
-
-```math
-\mathrm{supp}(p^*)
-=
-\left\{
-i : z_i + \gamma \log q_i > \theta \tau
-\right\}
-```
-
-Only items inside this support receive non-zero probabilities and gradients during training. Thus, the popularity prior affects not only the probability values, but also **which items participate in optimization**.
-
-<p align="center">
-  <img src="images/p_entmax_figure_2_2.png" width="900">
-</p>
-
-<p align="center">
-  <em>
-    Illustration of the PR-entmax training pipeline. Contextual logits produced by the backbone are combined with a fixed item popularity prior. The adjusted scores are passed through entmax, producing a sparse, popularity-aware distribution whose active support determines which items receive non-zero gradients.
-  </em>
-</p>
+Unlike softmax, entmax assigns exactly zero probability to part of the catalog. As a result, the popularity prior affects not only item probabilities, but also **which items receive non-zero gradients during training**.
 
 At inference time, the popularity prior is removed and items are ranked using only the learned contextual relevance:
 
 ```math
 s_i^{\mathrm{inference}}(x) = z_i(x)
 ```
-___
-
 ## Results
 Below we present the trade-off between NDCG@10 and Novelty@10 across different loss functions and hyperparameter configurations for all datasets.
 
