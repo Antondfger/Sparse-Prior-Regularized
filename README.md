@@ -161,5 +161,5 @@ The main SASRec experiments can be reproduced using the provided script:
 
 ```sh
 cd runs
-bash run.sh
+sh run.sh
 ```
