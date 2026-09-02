@@ -123,6 +123,7 @@ export PATH4SEQ="/your/path"
 # path to the split data
 export RECSYS_DATA_PATH="/your/path"
 ```
+
 Example of run via command line:
 ```sh
 cd runs
@@ -153,4 +154,12 @@ python optuna_rec.py datasets_info=Tmall type_loss=ce --multirun
 #Parameter tuning for Tmall with entmax loss
 python optuna_rec.py datasets_info=Tmall type_loss=entmax --multirun
 
+```
+
+
+The main SASRec experiments can be reproduced using the provided script:
+
+```sh
+cd runs
+bash run.sh
 ```
