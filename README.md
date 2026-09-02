@@ -61,7 +61,7 @@ s_i^{\mathrm{inference}}(x) = z_i(x)
 ```
 ## Results
 
-Experimental results on **SASRec** for all considered approaches at **Top-10**.  
+Experimental results on **SASRec** for all considered approaches at **@10**.  
 Double dagger (`‡`) marks the best result. <ins>Underlined</ins> numbers mark the second best. Asterisk (`*`) denotes a statistically significant improvement over *Cross-Entropy* for the best model.
 
 | Dataset | Method | NDCG@10 | Novelty@10 | Coverage@10 |
