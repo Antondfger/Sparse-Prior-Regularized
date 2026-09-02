@@ -10,6 +10,58 @@ Alexander Savchenko ·
 
 > Popularity bias is a well-known challenge in recommender systems, often leading to the over-exposure of popular items and reduced catalog coverage. In this work, we propose PR-entmax, a sparse prior-regularized objective that makes popularity correction context-dependent. We derive our method from a generalized variational principle in which an item popularity prior is incorporated directly into a sparse probability mapping, yielding a popularity-aware active support: the set of items receiving non-zero probabilities and hence non-zero gradients is determined jointly by contextual relevance and item popularity. As a result, the prior affects not only item probabilities, but also which items participate in gradient updates during training. The method requires no architectural changes and can be integrated into existing training pipelines by modifying only the loss function. At inference time, the prior term is removed, and items are ranked by the learned contextual relevance alone. Experiments across multiple benchmark datasets and sequential recommendation architectures show that PR-entmax consistently reduces popularity bias while preserving or improving recommendation relevance, advancing the relevance-debiasing trade-off.
 
+## Method
+
+<p align="center">
+  <img src="images/pr_entmax_pipeline.png" width="900">
+</p>
+
+<p align="center">
+  <em>
+    PR-entmax combines contextual logits with the item popularity prior before applying a sparse entmax mapping.
+    The resulting active support determines which items receive non-zero gradients during training.
+  </em>
+</p>
+
+The key idea is to modify the training scores using the item popularity prior:
+
+$$
+s_i^{\mathrm{train}}(x)
+=
+z_i(x) + \gamma \log q_i
+$$
+
+and construct a sparse probability distribution using entmax:
+
+$$
+p^*(z)
+=
+\operatorname{entmax}_{\alpha}
+\left(
+\frac{z + \gamma \log q}{\theta}
+\right).
+$$
+
+Because entmax produces exact zeros, the popularity prior affects not only item probabilities but also the **active support**:
+
+$$
+\operatorname{supp}(p^*)
+=
+\left\{
+i:
+z_i + \gamma \log q_i > \theta \tau
+\right\}.
+$$
+
+At inference time, the prior is removed:
+
+$$
+s_i^{\mathrm{inference}}(x) = z_i(x).
+$$
+
+---
+
+
 ## Results
 Below we present the trade-off between NDCG@10 and Novelty@10 across different loss functions and hyperparameter configurations for all datasets.
 
