@@ -1,11 +1,12 @@
 <h1 align="center">
   Mitigating Popularity Bias in Sequential Recommendations with Sparse Prior-Regularized Objective
-</h1>
-
-[Anton Pembek](https://scholar.google.com/citations?user=1oCtv4QAAAAJ) ·
+  [Anton Pembek](https://scholar.google.com/citations?user=1oCtv4QAAAAJ) ·
 [Anton Klenitskiy](https://scholar.google.com/citations?user=eGTslO8AAAAJ) ·
 Alexander Savchenko ·
 [Alexey Vasilev](https://scholar.google.com/citations?user=4vb0JIwAAAAJ)
+
+
+</h1>
 
 ---
 
