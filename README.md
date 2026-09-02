@@ -16,7 +16,7 @@ Alexander Savchenko ·
 
 <p align="center">
   <em>
-    Illustration of the PR-entmax training pipeline. Contextual logits produced by the backbone are combined with a fixed item popularity prior. The adjusted scores are transformed by entmax into a sparse, popularity-aware distribution, determining which items receive non-zero gradients during training.
+    Illustration of the PR-entmax training pipeline. For each item, the contextual logit produced by the backbone model is combined with the corresponding popularity prior. The resulting scores are transformed by entmax into a sparse, popularity-aware output distribution. The active support of this distribution determines which items receive non-zero gradients during training.
   </em>
 </p>
 
