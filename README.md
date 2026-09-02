@@ -61,42 +61,41 @@ s_i^{\mathrm{inference}}(x) = z_i(x)
 ```
 ## Results
 
-Experimental results on **SASRec** for all considered approaches at **@10**.  
-<strong>Bold</strong> numbers mark the best model, <u>underlined</u> numbers mark the second best. Asterisk (<sup>*</sup>) denotes a statistically significant improvement over <i>Cross-Entropy</i> for the best model.
+Experimental results on **SASRec** for all considered approaches at **Top-10**.  
+**Bold** numbers mark the best model. <ins>Underlined</ins> numbers mark the second best. Asterisk (<sup>*</sup>) denotes a statistically significant improvement over *Cross-Entropy* for the best model.
 
 | Dataset | Method | NDCG@10 | Novelty@10 | Coverage@10 |
 |---|---|---:|---:|---:|
 | **ML1M** | *Cross-Entropy* | 0.047 | 0.274 | 0.463 |
 |  | *IPW* | 0.047 | 0.290 | 0.496 |
-|  | *PD* | 0.040 | <u>0.306</u> | <u>0.514</u> |
-|  | *Pop Sampling* | <u>0.049</u> | 0.286 | 0.489 |
+|  | *PD* | 0.040 | <ins>0.306</ins> | <ins>0.514</ins> |
+|  | *Pop Sampling* | <ins>0.049</ins> | 0.286 | 0.489 |
 |  | *Logit Adjustment* | 0.047 | 0.291 | 0.496 |
-|  | *PR-entmax* | <strong>0.058</strong><sup>*</sup> | <strong>0.331</strong><sup>*</sup> | <strong>0.600</strong><sup>*</sup> |
-| **Tmall** | *Cross-Entropy* | <u>0.274</u> | 0.657 | 0.351 |
+|  | *PR-entmax* | **0.058**<sup>*</sup> | **0.331**<sup>*</sup> | **0.600**<sup>*</sup> |
+| **Tmall** | *Cross-Entropy* | <ins>0.274</ins> | 0.657 | 0.351 |
 |  | *IPW* | 0.265 | 0.704 | 0.431 |
 |  | *PD* | 0.249 | 0.705 | 0.332 |
-|  | *Pop Sampling* | 0.272 | <strong>0.729</strong><sup>*</sup> | <u>0.432</u> |
-|  | *Logit Adjustment* | 0.271 | <u>0.711</u> | 0.416 |
-|  | *PR-entmax* | <strong>0.285</strong><sup>*</sup> | 0.703 | <strong>0.499</strong><sup>*</sup> |
+|  | *Pop Sampling* | 0.272 | **0.729**<sup>*</sup> | <ins>0.432</ins> |
+|  | *Logit Adjustment* | 0.271 | <ins>0.711</ins> | 0.416 |
+|  | *PR-entmax* | **0.285**<sup>*</sup> | 0.703 | **0.499**<sup>*</sup> |
 | **Yambda-50M** | *Cross-Entropy* | 0.089 | 0.553 | 0.440 |
-|  | *IPW* | 0.085 | <strong>0.687</strong><sup>*</sup> | <u>0.696</u> |
+|  | *IPW* | 0.085 | **0.687**<sup>*</sup> | <ins>0.696</ins> |
 |  | *PD* | 0.084 | 0.617 | 0.472 |
-|  | *Pop Sampling* | <u>0.092</u> | 0.647 | 0.668 |
+|  | *Pop Sampling* | <ins>0.092</ins> | 0.647 | 0.668 |
 |  | *Logit Adjustment* | 0.089 | 0.626 | 0.550 |
-|  | *PR-entmax* | <strong>0.098</strong><sup>*</sup> | <u>0.671</u> | <strong>0.785</strong><sup>*</sup> |
-| **Yoochoose** | *Cross-Entropy* | <u>0.203</u> | 0.606 | 0.753 |
-|  | *IPW* | 0.191 | <u>0.655</u> | 0.832 |
+|  | *PR-entmax* | **0.098**<sup>*</sup> | <ins>0.671</ins> | **0.785**<sup>*</sup> |
+| **Yoochoose** | *Cross-Entropy* | <ins>0.203</ins> | 0.606 | 0.753 |
+|  | *IPW* | 0.191 | <ins>0.655</ins> | 0.832 |
 |  | *PD* | 0.188 | 0.645 | 0.768 |
-|  | *Pop Sampling* | 0.200 | <strong>0.663</strong><sup>*</sup> | <u>0.866</u> |
+|  | *Pop Sampling* | 0.200 | **0.663**<sup>*</sup> | <ins>0.866</ins> |
 |  | *Logit Adjustment* | 0.194 | 0.653 | 0.839 |
-|  | *PR-entmax* | <strong>0.209</strong><sup>*</sup> | 0.646 | <strong>0.876</strong><sup>*</sup> |
-| **Zvuk** | *Cross-Entropy* | <u>0.218</u> | 0.550 | 0.163 |
-|  | *IPW* | 0.199 | <u>0.655</u> | 0.182 |
+|  | *PR-entmax* | **0.209**<sup>*</sup> | 0.646 | **0.876**<sup>*</sup> |
+| **Zvuk** | *Cross-Entropy* | <ins>0.218</ins> | 0.550 | 0.163 |
+|  | *IPW* | 0.199 | <ins>0.655</ins> | 0.182 |
 |  | *PD* | 0.199 | 0.618 | 0.176 |
 |  | *Pop Sampling* | 0.212 | 0.610 | 0.150 |
-|  | *Logit Adjustment* | 0.214 | 0.637 | <u>0.205</u> |
-|  | *PR-entmax* | <strong>0.222</strong><sup>*</sup> | <strong>0.686</strong><sup>*</sup> | <strong>0.216</strong><sup>*</sup> |
-
+|  | *Logit Adjustment* | 0.214 | 0.637 | <ins>0.205</ins> |
+|  | *PR-entmax* | **0.222**<sup>*</sup> | **0.686**<sup>*</sup> | **0.216**<sup>*</sup> |
 
 Below we present the trade-off between NDCG@10 and Novelty@10 across different loss functions and hyperparameter configurations for all datasets.
 
